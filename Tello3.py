@@ -20,7 +20,7 @@ from time import sleep
 from pynput import keyboard
 
 me = Tello()
-# me.connect()
+me.connect()
 
 controller = False
 global returnmsg
