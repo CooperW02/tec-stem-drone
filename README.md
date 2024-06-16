@@ -1,3 +1,6 @@
+#Info
+This is a project that control's tello drones, specifically the education versions.
+
 # Installation
 Use Pycharm CE to download and commit to this.
 
