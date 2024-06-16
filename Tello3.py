@@ -98,7 +98,7 @@ def controller_input():
             print("Controller input off")
             break
         # print(vals)
-        # me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
+        me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
 
 
 def move():
@@ -349,7 +349,7 @@ while True:
                     #kb = "rc {} {} {} {}".format(kb_in[0], kb_in[1], kb_in[2], kb_in[3])
                     # kb = kb.encode(encoding="utf-8")
                     # kb_sent = sock.sendto(kb, tello_address)
-                    # me.send_rc_control(kb_in[0], kb_in[1], kb_in[2], kb_in[3])
+                    me.send_rc_control(kb_in[0], kb_in[1], kb_in[2], kb_in[3])
                     print(kb_in)
             # LEFT RIGHT, FRONT BACK, UP DOWN, YAW VELOCITY
 
