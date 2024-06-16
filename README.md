@@ -1,6 +1,8 @@
 # Info
 
 This is a project that control's tello drones, specifically the education versions.
+This has been tested and used on MacOS Sonoma 14.4.1
+I am not sure if this will work on windows
 
 # Installation
 Use Pycharm CE to download and commit to this.
