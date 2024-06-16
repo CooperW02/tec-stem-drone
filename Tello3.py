@@ -8,7 +8,6 @@ from pynput.keyboard import Key, Listener
 from pynput import keyboard
 import numpy as np
 import base64
-#test
 
 from time import sleep
 from pynput import keyboard
