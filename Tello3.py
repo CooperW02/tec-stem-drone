@@ -36,7 +36,7 @@ dic = {
 
 commands = ["command", "takeoff", "land", "streamon", "streamoff", "emergency", "up", "down", "left", "right", "forward", "back",
             "cw", "ccw", "flip", "go", "stop", "curve", "jump", "speed", "rc", "wifi", "mon", "moff", "mdirection", "ap", "speed?",
-            "battery?", "time?", "wifi?", "sdk?", "sn?"]
+            "battery?", "time?", "wifi?", "sdk?", "sn?", "sequence", "end", "stats", "keyboard", "controller_on", "opencam", "controller_off"]
 
 def recv1():
     while True:
