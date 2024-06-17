@@ -34,6 +34,10 @@ dic = {
     'w': 0, 's': 0, 'a': 0, 'd': 0, 'left': 0, 'right': 0, 'up': 0, 'down': 0, 'q': 0, 'e': 0, 'esc': 0
 }
 
+commands = ["command", "takeoff", "land", "streamon", "streamoff", "emergency", "up", "down", "left", "right", "forward", "back",
+            "cw", "ccw", "flip", "go", "stop", "curve", "jump", "speed", "rc", "wifi", "mon", "moff", "mdirection", "ap", "speed?",
+            "battery?", "time?", "wifi?", "sdk?", "sn?"]
+
 def recv1():
     while True:
         packet, _ = s.recvfrom(BUFF_SIZE)
@@ -185,6 +189,7 @@ while True:
 
     try:
         msg = input("")
+        msg = msg.lower()
         cmd = msg.split(' ')
 
         if not msg:
@@ -356,10 +361,13 @@ while True:
             print("controller off")
             controller = False
         else:
+            if cmd[0] in commands:
 
-            # Send data
-            msg = msg.encode(encoding="utf-8")
-            sent = sock.sendto(msg, tello_address)
+                # Send data
+                msg = msg.encode(encoding="utf-8")
+                sent = sock.sendto(msg, tello_address)
+            else:
+                print(f"Command not recognised. Possible commands: \n ", *commands, sep=" ")
     except KeyboardInterrupt:
         print('\n . . .\n')
         sock.close()
