@@ -1,27 +1,22 @@
-import cv2, imutils, socket
+import cv2  # , imutils, socket
 from djitellopy import Tello
 import threading
 import socket
 import time
 import PS4Joystick as js
-from pynput.keyboard import Key, Listener
-from pynput import keyboard
-import numpy as np
-import base64
+# from pynput.keyboard import Key, Listener
+# from pynput import keyboard
+# import numpy as np
+# import base64
 
 from time import sleep
 from pynput import keyboard
 
 me = Tello()
 me.connect()
+# me.streamon()
 
 controller = False
-global returnmsg
-returnmsg = ''
-
-BUFF_SIZE = 65536
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
 
 ip = "0.0.0.0"
 port = 11111
@@ -34,25 +29,8 @@ dic = {
     'w': 0, 's': 0, 'a': 0, 'd': 0, 'left': 0, 'right': 0, 'up': 0, 'down': 0, 'q': 0, 'e': 0, 'esc': 0
 }
 
-commands = ["command", "takeoff", "land", "streamon", "streamoff", "emergency", "up", "down", "left", "right", "forward", "back",
-            "cw", "ccw", "flip", "go", "stop", "curve", "jump", "speed", "rc", "wifi", "mon", "moff", "mdirection", "ap", "speed?",
-            "battery?", "time?", "wifi?", "sdk?", "sn?", "sequence", "end", "stats", "keyboard", "controller_on", "opencam", "controller_off"]
-
-def recv1():
-    while True:
-        packet, _ = s.recvfrom(BUFF_SIZE)
-        data = base64.b64decode(packet, ' /')
-        npdata = np.fromstring(data, dtype=np.uint8)
-        frame = cv2.imdecode(npdata, 1)
-        cv2.imshow("sender", frame)
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
-            s.close()
-            break
-
-
 host = ''
-port = 9000
+# port = 9000
 locaddr = (host, port)
 stats = {'speed': 0, 'battery': 0, 'time': 0, 'wifi': '', 'sdk': '', 'sn': ''}
 
@@ -63,29 +41,6 @@ tello_address = ('192.168.10.1', 8889)
 
 sock.bind(locaddr)
 
-x1 = threading.Thread(target=recv1)
-
-
-def recv():
-    while True:
-        try:
-            data, server = sock.recvfrom(1518)
-            print(data.decode(encoding="utf-8"))
-        except Exception:
-            print('\nExit . . .\n')
-            break
-
-
-print('\r\n\r\nTello Python3 Demo.\r\n')
-
-print('Tello: command takeoff land flip forward back left right \r\n       up down cw ccw speed speed? sequence\r\n')
-
-print('end -- quit demo.\r\n')
-
-# recvThread create
-recvThread = threading.Thread(target=recv)
-recvThread.start()
-
 
 def controller_input():
     print("Controller input on \n")
@@ -94,8 +49,21 @@ def controller_input():
         if vals == "off":
             print("Controller input off")
             break
-        # print(vals)
+        print(vals)
         me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
+
+
+def camon():
+    me.streamon()
+    while True:
+        try:
+            img = me.get_frame_read().frame  #
+            cv2.imshow('frame', img)
+            cv2.waitKey(1)  #
+        except KeyboardInterrupt:
+            exit(1)
+        finally:
+            print("fin")
 
 
 def move():
@@ -107,13 +75,13 @@ def move():
 
         if flag == 0:
             if (jsVal['o']) == 1:
-                # me.takeoff()
+                me.takeoff()
                 print("Take off")
                 sleep(1)
                 flag = 1
 
         if (jsVal['t']) == 1:
-            # me.land()
+            me.land()
             print("Land")
             flag = 0
             sleep(1)
@@ -153,41 +121,41 @@ def move():
             return "off"
 
         if (jsVal['left_stick_x']) == 1:
-            lr = speed  #"right"
+            lr = speed  # "right"
 
         elif (jsVal['left_stick_x']) == -1.0:
-            lr = -speed  #"left"
+            lr = -speed  # "left"
 
         if (jsVal['left_stick_y']) == 1:
-            fb = -speed  #"backward"
+            fb = -speed  # "backward"
 
         elif (jsVal['left_stick_y']) == -1.0:
-            fb = speed  #"forward"
+            fb = speed  # "forward"
 
         if (jsVal['right_stick_x']) == 1:
-            yv = speed  #"pitchright"
+            yv = speed  # "pitchright"
 
         elif (jsVal['right_stick_x']) == -1.0:
-            yv = -speed  #"pitchleft"
+            yv = -speed  # "pitchleft"
 
         if (jsVal['right_stick_y']) == 1:
-            ud = -speed  #"down"
+            ud = -speed  # "down"
 
         elif (jsVal['right_stick_y']) == -1.0:
-            ud = speed  #"up"
+            ud = speed  # "up"
 
         if (jsVal['left_stick_x']) != 1 and (jsVal['left_stick_x']) != -1 and (jsVal['left_stick_y']) != 1 and (
-        jsVal['left_stick_y']) != -1 and (jsVal['right_stick_x']) != 1 and (jsVal['right_stick_x']) != -1 and (
-        jsVal['right_stick_y']) != 1 and (jsVal['right_stick_y']) != -1:
+                jsVal['left_stick_y']) != -1 and (jsVal['right_stick_x']) != 1 and (jsVal['right_stick_x']) != -1 and (
+                jsVal['right_stick_y']) != 1 and (jsVal['right_stick_y']) != -1:
             lr, fb, ud, yv = 0, 0, 0, 0
 
         return [lr, fb, ud, yv]
 
 
-
 while True:
 
     try:
+
         msg = input("")
         msg = msg.lower()
         cmd = msg.split(' ')
@@ -197,7 +165,8 @@ while True:
 
         if 'end' == cmd[0]:
             print('...')
-            sock.close()
+            # sock.close()
+            me.end()
             break
 
         if 'sequence' == cmd[0]:
@@ -216,8 +185,9 @@ while True:
                     if f'sequence{sequence_number}' in locals():
                         sequence = vars()[f"sequence{sequence_number}"]
                         for x in sequence:
-                            msg = x.encode(encoding="utf-8")
-                            sock.sendto(msg, tello_address)
+                            # msg = x.encode(encoding="utf-8")
+                            # sock.sendto(msg, tello_address)
+                            me.send_command_with_return(msg)
                             time.sleep(5)
                         print(f'Test sequence {sequence_number} successfully finished\n')
                     else:
@@ -278,7 +248,7 @@ while True:
                     print("Key a")
 
                 if dic['q'] == 1:
-                    sock.sendto(b'land', tello_address);
+                    # sock.sendto(b'land', tello_address)
                     time.sleep(3)  # Landing The Drone
                     me.land()
                     print("Key q")
@@ -344,15 +314,12 @@ while True:
                     keyboard.Listener.stop()
                     break
                 else:
-                    #kb = "rc {} {} {} {}".format(kb_in[0], kb_in[1], kb_in[2], kb_in[3])
+                    # kb = "rc {} {} {} {}".format(kb_in[0], kb_in[1], kb_in[2], kb_in[3])
                     # kb = kb.encode(encoding="utf-8")
                     # kb_sent = sock.sendto(kb, tello_address)
                     me.send_rc_control(kb_in[0], kb_in[1], kb_in[2], kb_in[3])
                     # print(kb_in)
             # LEFT RIGHT, FRONT BACK, UP DOWN, YAW VELOCITY
-
-        elif 'opencam' == cmd[0]:
-            x1.start()\
 
         elif 'controller_on' == cmd[0]:
             controller = True
@@ -360,15 +327,15 @@ while True:
         elif 'controller_off' == cmd[0]:
             print("controller off")
             controller = False
-        else:
-            if cmd[0] in commands:
 
-                # Send data
-                msg = msg.encode(encoding="utf-8")
-                sent = sock.sendto(msg, tello_address)
-            else:
-                print(f"Command not recognised. Possible commands: \n ", *commands, sep=" ")
+        elif 'camon' == cmd[0]:
+            camon()
+        # Send data
+        # msg = msg.encode(encoding="utf-8")
+        # sent = sock.sendto(msg, tello_address)
+        me.send_command_with_return(msg)
     except KeyboardInterrupt:
         print('\n . . .\n')
-        sock.close()
+        # sock.close()
+        me.end()
         break
